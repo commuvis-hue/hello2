@@ -1,0 +1,86 @@
+import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { LogOut, Trash2, Plus } from 'lucide-react'
+import SetupNotice from '../components/SetupNotice.jsx'
+import { useAuth } from '../lib/auth.jsx'
+import { fetchMyVideos, deleteVideo } from '../lib/videos.js'
+
+const STATUS = {
+  published: { label: '공개됨', tone: 'green' },
+  pending: { label: '검수 대기', tone: 'amber' },
+  rejected: { label: '반려됨', tone: 'violet' },
+}
+
+export default function MyPage() {
+  const { ready, user, profile, signOut } = useAuth()
+  const [videos, setVideos] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    if (!ready || !user) return
+    fetchMyVideos(user.id)
+      .then(setVideos)
+      .catch((e) => setError(e.message))
+      .finally(() => setLoading(false))
+  }, [ready, user])
+
+  const remove = async (v) => {
+    if (!window.confirm(`"${v.title}" 영상을 삭제할까요? 되돌릴 수 없습니다.`)) return
+    try {
+      await deleteVideo(v.raw)
+      setVideos((list) => list.filter((x) => x.id !== v.id))
+    } catch (e) {
+      alert('삭제하지 못했습니다: ' + e.message)
+    }
+  }
+
+  if (!ready) return <div className="page form-page"><h1 className="form-page__title">마이페이지</h1><SetupNotice /></div>
+
+  return (
+    <div className="page form-page">
+      <section className="me">
+        <div className="me__avatar">{(profile?.nickname || user.email)[0].toUpperCase()}</div>
+        <div>
+          <strong>{profile?.nickname ?? '…'}</strong>
+          <span>{user.email}</span>
+        </div>
+        <button className="btn-outline" onClick={signOut}><LogOut size={16} />로그아웃</button>
+      </section>
+
+      <div className="section__head section__head--flush">
+        <h2>내가 올린 영상</h2>
+        <Link to="/upload" className="btn-outline"><Plus size={16} />영상 올리기</Link>
+      </div>
+
+      {loading && <p className="muted">불러오는 중…</p>}
+      {error && <p className="form__error">{error}</p>}
+      {!loading && videos.length === 0 && (
+        <div className="empty-box">
+          <p>아직 올린 영상이 없습니다.</p>
+          <Link to="/upload" className="btn-primary">첫 영상 올리기</Link>
+        </div>
+      )}
+
+      <ul className="my-videos">
+        {videos.map((v) => {
+          const st = STATUS[v.status] ?? STATUS.published
+          return (
+            <li key={v.id}>
+              <Link to={`/play/watch/${v.id}`} className="my-videos__thumb">
+                {v.poster ? <img src={v.poster} alt="" /> : <video src={v.video + '#t=0.1'} muted preload="metadata" />}
+                <span className="duration">{v.duration}</span>
+              </Link>
+              <div className="my-videos__body">
+                <strong>{v.title}</strong>
+                <span className={`status status--${st.tone}`}>{st.label}</span>
+                <span className="muted">{new Date(v.createdAt).toLocaleDateString('ko-KR')} · 조회 {v.views} · 좋아요 {v.likes}</span>
+              </div>
+              <button className="icon-btn" onClick={() => remove(v)} aria-label={`${v.title} 삭제`}><Trash2 size={20} /></button>
+            </li>
+          )
+        })}
+      </ul>
+    </div>
+  )
+}
