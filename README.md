@@ -47,6 +47,8 @@ npm run build    # dist/ 생성
 | `/trade` | 커버플로우 배너, 거래 상품 필터 |
 | `/login` | 로그인 · 회원가입 |
 | `/synopsis/new`, `/synopsis/:id` | 시놉시스 작성·수정, 자동 저장 (로그인 필요) |
+| `/purchase/:list/:id` | 영상 거래: 소유권 고지 → 결제 방식 → 결제(테스트) → 저작권 인증서 (로그인 필요) |
+| `/verify`, `/certificate/:code` | 인증서 진위 확인 (누구나) |
 | `/upload` | 영상 업로드 (로그인 필요) |
 | `/my` | 마이페이지 · 내가 올린 영상 관리 (로그인 필요) |
 | `/play/:list/:id` | 쇼츠 세로 재생 화면 |

@@ -2,6 +2,9 @@ import { useEffect, useMemo, useState } from 'react'
 import { supabase, supabaseReady, SUPABASE_URL, SUPABASE_KEY, BUCKET } from './supabase.js'
 import { watchItems } from '../data/mock.js'
 
+// 거래 가능 여부: 판매가가 있고, 거래불가로 지정되지 않았고, 이미 팔리지 않은 영상
+export const canTrade = (it) => Boolean(it.price) && it.tradable !== false && !it.sold
+
 export const MAX_BYTES = 50 * 1024 * 1024 // Supabase 무료 요금제 파일당 한도에 맞춤
 
 const compact = (n) => new Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 }).format(n ?? 0)
@@ -25,6 +28,8 @@ export const toCard = (r) => ({
   tradable: r.tradable,
   price: r.price,
   owner: r.profiles?.nickname,
+  ownerId: r.owner_id,
+  description: r.description,
   badge: Date.now() - new Date(r.created_at).getTime() < 3 * 86400000 ? 'new' : undefined,
   status: r.status,
   createdAt: r.created_at,

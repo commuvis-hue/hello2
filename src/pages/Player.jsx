@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { ArrowLeft, Heart, Share2, Volume2, VolumeX, Play, ShoppingCart } from 'lucide-react'
+import { ArrowLeft, Heart, Share2, Volume2, VolumeX, Play, ShoppingCart, Info, X, Eye, Clock, CalendarDays, Copyright, ChevronRight } from 'lucide-react'
 import { tradeItems, formatKRW } from '../data/mock.js'
-import { useWatchList } from '../lib/videos.js'
+import { useWatchList, canTrade } from '../lib/videos.js'
+const rightsLabel = (it) => (it.sold ? '거래 완료' : canTrade(it) ? '거래 가능' : '거래 불가')
+const dateText = (d) => (d ? new Date(d).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' }) : '—')
 
 // 쇼츠 재생 화면: 위아래로 넘기면 다음 영상이 자동 재생됩니다.
 export default function Player() {
@@ -27,6 +29,7 @@ function PlayerFeed({ list, id, items }) {
   const [muted, setMuted] = useState(true) // 브라우저 정책상 첫 자동재생은 음소거로 시작
   const [paused, setPaused] = useState(false)
   const [liked, setLiked] = useState({})
+  const [infoFor, setInfoFor] = useState(null)
 
   // 처음 누른 영상 위치로 이동
   useEffect(() => {
@@ -121,9 +124,11 @@ function PlayerFeed({ list, id, items }) {
             <div className="player__info">
               {it.owner && <p className="player__owner">@{it.owner}</p>}
               <h2>{it.title}</h2>
-              <p className="player__tags">{it.tags.map((t) => '#' + t).join(' ')}</p>
-              {it.price && !it.sold && (
-                <button className="player__buy"><ShoppingCart size={16} />{formatKRW(it.price)} 구매하기</button>
+              <button className="player__more" onClick={() => setInfoFor(it)}>상세 정보 보기 <ChevronRight size={16} /></button>
+              {canTrade(it) && (
+                <button className="player__buy" onClick={() => navigate(`/purchase/${list}/${it.id}`)}>
+                  <ShoppingCart size={16} />{formatKRW(it.price)} 거래하기
+                </button>
               )}
             </div>
 
@@ -136,10 +141,57 @@ function PlayerFeed({ list, id, items }) {
                 <Share2 size={28} />
                 <span>공유</span>
               </button>
+              <button onClick={() => setInfoFor(it)} aria-label="상세 정보">
+                <Info size={28} />
+                <span>정보</span>
+              </button>
             </div>
           </section>
         ))}
       </div>
+
+      {infoFor && (
+        <div className="sheet" role="dialog" aria-modal="true" aria-label={`${infoFor.title} 상세 정보`} onClick={() => setInfoFor(null)}>
+          <div className="sheet__box" onClick={(e) => e.stopPropagation()}>
+            <div className="sheet__grip" />
+            <div className="sheet__head">
+              <div>
+                {infoFor.owner && <p className="player__owner">@{infoFor.owner}</p>}
+                <h2>{infoFor.title}</h2>
+              </div>
+              <button className="icon-btn" onClick={() => setInfoFor(null)} aria-label="닫기"><X size={24} /></button>
+            </div>
+
+            <dl className="facts">
+              <div><dt><Eye size={16} />조회수</dt><dd>{infoFor.views ?? '—'}</dd></div>
+              <div><dt><Heart size={16} />좋아요</dt><dd>{infoFor.likes ?? '—'}</dd></div>
+              <div><dt><Clock size={16} />길이</dt><dd>{infoFor.duration || '—'}</dd></div>
+              <div><dt><CalendarDays size={16} />등록일</dt><dd>{dateText(infoFor.createdAt)}</dd></div>
+            </dl>
+
+            <p className="sheet__desc">{infoFor.description || '등록된 설명이 없습니다.'}</p>
+            {infoFor.tags?.length > 0 && (
+              <div className="sheet__tags">{infoFor.tags.map((t) => <span key={t}>#{t}</span>)}</div>
+            )}
+
+            <section className="rights">
+              <h3><Copyright size={18} />저작권 정보</h3>
+              <dl>
+                <dt>권리자</dt><dd>{infoFor.owner ? '@' + infoFor.owner : 'HELLOOOO'}</dd>
+                <dt>거래 상태</dt><dd className={`rights__state rights__state--${infoFor.sold ? 'done' : canTrade(infoFor) ? 'on' : 'off'}`}>{rightsLabel(infoFor)}</dd>
+                {canTrade(infoFor) && <><dt>판매가</dt><dd className="rights__price">{formatKRW(infoFor.price)}</dd></>}
+              </dl>
+              {canTrade(infoFor) ? (
+                <button className="btn-primary" onClick={() => navigate(`/purchase/${list}/${infoFor.id}`)}>
+                  <ShoppingCart size={18} />이 영상 거래하기
+                </button>
+              ) : (
+                <p className="form__hint">{infoFor.sold ? '이미 거래가 완료된 영상입니다.' : '권리자가 거래를 허용하지 않은 영상입니다.'}</p>
+              )}
+            </section>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

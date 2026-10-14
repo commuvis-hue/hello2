@@ -12,6 +12,8 @@ import Login from './pages/Login.jsx'
 import Upload from './pages/Upload.jsx'
 import MyPage from './pages/MyPage.jsx'
 import SynopsisEditor from './pages/SynopsisEditor.jsx'
+import Purchase from './pages/Purchase.jsx'
+import CertificateVerify from './pages/CertificateVerify.jsx'
 import { RequireAuth } from './lib/auth.jsx'
 
 export default function App() {
@@ -28,6 +30,9 @@ export default function App() {
         <Route path="/trade" element={<Trade />} />
         <Route path="/library" element={<Placeholder title="내 라이브러리" desc="저장하고 구매한 쇼츠가 여기에 모입니다." />} />
         <Route path="/synopsis/:id" element={<RequireAuth><SynopsisEditor /></RequireAuth>} />
+        <Route path="/purchase/:list/:id" element={<RequireAuth><Purchase /></RequireAuth>} />
+        <Route path="/verify" element={<CertificateVerify />} />
+        <Route path="/certificate/:code" element={<CertificateVerify />} />
         <Route path="/upload" element={<RequireAuth><Upload /></RequireAuth>} />
         <Route path="/my" element={<RequireAuth><MyPage /></RequireAuth>} />
       </Route>

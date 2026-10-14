@@ -85,7 +85,7 @@ export default function Trade() {
               <div className="vcard__foot">
                 {t.sold
                   ? <span className="pill pill--off"><CheckCircle2 size={15} />거래완료</span>
-                  : <button className="pill pill--buy"><ShoppingCart size={15} />거래가능</button>}
+                  : <Link to={`/purchase/trade/${t.id}`} className="pill pill--buy"><ShoppingCart size={15} />거래가능</Link>}
                 <button className="more" aria-label="더보기"><MoreVertical size={18} /></button>
               </div>
             </div>

@@ -13,15 +13,15 @@ export const currentUser = {
 }
 
 export const watchItems = [
-  { id: 'w1', video: vid('a'), rank: 1, title: '오늘도 좋은 하루', tags: ['강아지', '힐링'], duration: '0:32', views: '1.2M', likes: '84K', tradable: true, seed: 'dog' },
-  { id: 'w2', video: vid('b'), rank: 2, title: '도시의 밤', tags: ['브이로그', '일상'], duration: '0:45', views: '980K', likes: '72K', tradable: true, seed: 'night' },
-  { id: 'w3', video: vid('c'), rank: 3, title: '다시, 도전', tags: ['스포츠', '열정'], duration: '0:28', views: '850K', likes: '68K', tradable: false, seed: 'surf' },
-  { id: 'w4', video: vid('d'), badge: 'new', title: '커피 한 잔의 시간', tags: ['카페', '감성'], duration: '0:31', views: '320K', likes: '24K', tradable: true, seed: 'coffee' },
-  { id: 'w5', video: vid('e'), badge: 'new', title: '노을이 머무는 곳', tags: ['여행', '풍경'], duration: '0:37', views: '410K', likes: '31K', tradable: false, seed: 'sunset' },
-  { id: 'w6', video: vid('f'), badge: 'hot', title: '작은 행복', tags: ['고양이', '일상'], duration: '0:26', views: '2.3M', likes: '120K', tradable: true, seed: 'cat' },
-  { id: 'w7', video: vid('g'), badge: 'new', title: '춤추는 순간', tags: ['댄스', '도전'], duration: '0:40', views: '560K', likes: '48K', tradable: true, seed: 'dance' },
-  { id: 'w8', video: vid('a'), title: '별이 빛나는 밤', tags: ['캠핑', '자연'], duration: '0:35', views: '780K', likes: '62K', tradable: false, seed: 'stars' },
-  { id: 'w9', video: vid('b'), badge: 'hot', title: '한 번 더', tags: ['스케이트보드', '열정'], duration: '0:33', views: '1.8M', likes: '95K', tradable: true, seed: 'skate' },
+  { id: 'w1', owner: 'happy_pet', price: 2800000, description: '바다를 처음 본 골든리트리버의 하루. 파도와 공놀이에 빠진 30초입니다.', createdAt: '2026-09-02', video: vid('a'), rank: 1, title: '오늘도 좋은 하루', tags: ['강아지', '힐링'], duration: '0:32', views: '1.2M', likes: '84K', tradable: true, seed: 'dog' },
+  { id: 'w2', owner: 'film_k', price: 7000000, description: '비 내린 뒤 도심의 네온 불빛을 따라 걷는 시네마틱 브이로그.', createdAt: '2026-08-21', video: vid('b'), rank: 2, title: '도시의 밤', tags: ['브이로그', '일상'], duration: '0:45', views: '980K', likes: '72K', tradable: true, seed: 'night' },
+  { id: 'w3', owner: 'wave_rider', description: '실패한 열두 번의 테이크 끝에 잡은 단 한 번의 파도.', createdAt: '2026-08-11', video: vid('c'), rank: 3, title: '다시, 도전', tags: ['스포츠', '열정'], duration: '0:28', views: '850K', likes: '68K', tradable: false, seed: 'surf' },
+  { id: 'w4', owner: 'cafe_day', price: 1900000, description: '라떼 아트가 완성되는 순간을 클로즈업으로 담았습니다.', createdAt: '2026-09-28', video: vid('d'), badge: 'new', title: '커피 한 잔의 시간', tags: ['카페', '감성'], duration: '0:31', views: '320K', likes: '24K', tradable: true, seed: 'coffee' },
+  { id: 'w5', owner: 'suyeon_', description: '해 질 녘 옥상에서 바라본 도시. 하루가 끝나는 색을 기록했습니다.', createdAt: '2026-09-30', video: vid('e'), badge: 'new', title: '노을이 머무는 곳', tags: ['여행', '풍경'], duration: '0:37', views: '410K', likes: '31K', tradable: false, seed: 'sunset' },
+  { id: 'w6', owner: 'meow_lab', price: 4500000, description: '나비를 처음 본 아기 고양이의 표정 변화.', createdAt: '2026-09-15', video: vid('f'), badge: 'hot', title: '작은 행복', tags: ['고양이', '일상'], duration: '0:26', views: '2.3M', likes: '120K', tradable: true, seed: 'cat' },
+  { id: 'w7', owner: 'dance_mira', price: 3200000, description: '빈 연습실, 아침 햇살 속에서 한 번에 춘 즉흥 댄스.', createdAt: '2026-10-03', video: vid('g'), badge: 'new', title: '춤추는 순간', tags: ['댄스', '도전'], duration: '0:40', views: '560K', likes: '48K', tradable: true, seed: 'dance' },
+  { id: 'w8', owner: 'camp_life', description: '은하수 아래 텐트 하나. 타임랩스로 담은 밤하늘.', createdAt: '2026-07-30', video: vid('a'), title: '별이 빛나는 밤', tags: ['캠핑', '자연'], duration: '0:35', views: '780K', likes: '62K', tradable: false, seed: 'stars' },
+  { id: 'w9', owner: 'jino_park', price: 5000000, description: '노을 진 공원에서 성공한 킥플립, 그 한 번을 위한 기록.', createdAt: '2026-09-09', video: vid('b'), badge: 'hot', title: '한 번 더', tags: ['스케이트보드', '열정'], duration: '0:33', views: '1.8M', likes: '95K', tradable: true, seed: 'skate' },
 ]
 
 export const tradeItems = [

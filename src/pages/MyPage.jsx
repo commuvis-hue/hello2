@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { LogOut, Trash2, Plus } from 'lucide-react'
+import { LogOut, Trash2, Plus, ShieldCheck, ChevronRight } from 'lucide-react'
 import SetupNotice from '../components/SetupNotice.jsx'
 import { useAuth } from '../lib/auth.jsx'
 import { fetchMyVideos, deleteVideo } from '../lib/videos.js'
+import { fetchMyCertificates } from '../lib/certificates.js'
 
 const STATUS = {
   published: { label: '공개됨', tone: 'green' },
@@ -16,6 +17,7 @@ export default function MyPage() {
   const [videos, setVideos] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [certs, setCerts] = useState([])
 
   useEffect(() => {
     if (!ready || !user) return
@@ -23,6 +25,7 @@ export default function MyPage() {
       .then(setVideos)
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false))
+    fetchMyCertificates().then(setCerts).catch(() => setCerts([]))
   }, [ready, user])
 
   const remove = async (v) => {
@@ -47,6 +50,26 @@ export default function MyPage() {
         </div>
         <button className="btn-outline" onClick={signOut}><LogOut size={16} />로그아웃</button>
       </section>
+
+      {certs.length > 0 && (
+        <>
+          <div className="section__head section__head--flush"><h2>보유 저작권 인증서</h2></div>
+          <ul className="cert-list">
+            {certs.map((c) => (
+              <li key={c.code}>
+                <Link to={`/certificate/${c.code}`}>
+                  <ShieldCheck size={24} />
+                  <span>
+                    <strong>{c.video_title}</strong>
+                    <small>{c.code} · {new Date(c.issued_at).toLocaleDateString('ko-KR')}{c.is_test ? ' · 테스트' : ''}</small>
+                  </span>
+                  <ChevronRight size={18} />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
 
       <div className="section__head section__head--flush">
         <h2>내가 올린 영상</h2>

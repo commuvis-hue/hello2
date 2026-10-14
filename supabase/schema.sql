@@ -147,3 +147,38 @@ $$;
 drop trigger if exists synopses_touch on public.synopses;
 create trigger synopses_touch before update on public.synopses
   for each row execute function public.touch_updated_at();
+
+-- 5) 저작권 인증서 (TRADE 거래 완료 시 발급) -----------------------------
+create table if not exists public.certificates (
+  id           uuid primary key default gen_random_uuid(),
+  code         text not null unique,
+  video_ref    text not null,
+  video_title  text not null,
+  seller_name  text,
+  buyer_id     uuid not null references public.profiles (id) on delete cascade,
+  buyer_name   text not null,
+  amount       bigint not null check (amount >= 0),
+  pay_method   text not null,
+  video_hash   text,
+  is_test      boolean not null default true,
+  issued_at    timestamptz not null default now()
+);
+create index if not exists certificates_buyer_idx on public.certificates (buyer_id, issued_at desc);
+alter table public.certificates enable row level security;
+
+drop policy if exists "certificates_select_own" on public.certificates;
+create policy "certificates_select_own" on public.certificates for select to authenticated using (buyer_id = auth.uid());
+-- 실제 PG 결제가 붙기 전까지는 본인 명의의 '테스트' 인증서만 만들 수 있음
+drop policy if exists "certificates_insert_test" on public.certificates;
+create policy "certificates_insert_test" on public.certificates for insert to authenticated
+  with check (buyer_id = auth.uid() and is_test = true);
+
+-- 코드로 누구나 진위 확인 (금액·결제수단·구매자ID는 공개하지 않음)
+create or replace function public.verify_certificate(p_code text)
+returns table (code text, video_title text, seller_name text, buyer_name text, video_hash text, is_test boolean, issued_at timestamptz)
+language sql stable security definer set search_path = '' as $$
+  select c.code, c.video_title, c.seller_name, c.buyer_name, c.video_hash, c.is_test, c.issued_at
+  from public.certificates c
+  where c.code = upper(trim(p_code));
+$$;
+grant execute on function public.verify_certificate(text) to anon, authenticated;
