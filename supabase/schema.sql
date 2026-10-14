@@ -15,12 +15,12 @@ create table if not exists public.profiles (
 
 alter table public.profiles enable row level security;
 
-drop policy if exists "profiles: 누구나 조회" on public.profiles;
-create policy "profiles: 누구나 조회" on public.profiles
+drop policy if exists "profiles_select" on public.profiles;
+create policy "profiles_select" on public.profiles
   for select to anon, authenticated using (true);
 
-drop policy if exists "profiles: 본인만 수정" on public.profiles;
-create policy "profiles: 본인만 수정" on public.profiles
+drop policy if exists "profiles_update" on public.profiles;
+create policy "profiles_update" on public.profiles
   for update to authenticated using (id = auth.uid()) with check (id = auth.uid());
 
 -- 회원이 자기 role(관리자 권한)을 바꾸지 못하도록 수정 가능한 칸을 제한
@@ -67,22 +67,22 @@ create index if not exists videos_owner_idx on public.videos (owner_id);
 
 alter table public.videos enable row level security;
 
-drop policy if exists "videos: 공개 영상 또는 내 영상 조회" on public.videos;
-create policy "videos: 공개 영상 또는 내 영상 조회" on public.videos
+drop policy if exists "videos_select" on public.videos;
+create policy "videos_select" on public.videos
   for select to anon, authenticated
   using (status = 'published' or owner_id = auth.uid());
 
-drop policy if exists "videos: 본인 명의로만 등록" on public.videos;
-create policy "videos: 본인 명의로만 등록" on public.videos
+drop policy if exists "videos_insert" on public.videos;
+create policy "videos_insert" on public.videos
   for insert to authenticated
   with check (owner_id = auth.uid());
 
-drop policy if exists "videos: 본인만 수정" on public.videos;
-create policy "videos: 본인만 수정" on public.videos
+drop policy if exists "videos_update" on public.videos;
+create policy "videos_update" on public.videos
   for update to authenticated using (owner_id = auth.uid()) with check (owner_id = auth.uid());
 
-drop policy if exists "videos: 본인만 삭제" on public.videos;
-create policy "videos: 본인만 삭제" on public.videos
+drop policy if exists "videos_delete" on public.videos;
+create policy "videos_delete" on public.videos
   for delete to authenticated using (owner_id = auth.uid());
 
 -- 회원은 제목·설명·태그·거래 설정만 수정 가능 (status, 조회수, 좋아요는 수정 불가)
@@ -100,12 +100,50 @@ on conflict (id) do update
       allowed_mime_types = excluded.allowed_mime_types;
 
 -- 파일 경로는 "회원ID/파일이름" 형식. 자기 폴더에만 올리고 지울 수 있음
-drop policy if exists "storage: 내 폴더에 업로드" on storage.objects;
-create policy "storage: 내 폴더에 업로드" on storage.objects
+drop policy if exists "videos_storage_insert" on storage.objects;
+create policy "videos_storage_insert" on storage.objects
   for insert to authenticated
   with check (bucket_id = 'videos' and (storage.foldername(name))[1] = auth.uid()::text);
 
-drop policy if exists "storage: 내 파일 삭제" on storage.objects;
-create policy "storage: 내 파일 삭제" on storage.objects
+drop policy if exists "videos_storage_delete" on storage.objects;
+create policy "videos_storage_delete" on storage.objects
   for delete to authenticated
   using (bucket_id = 'videos' and (storage.foldername(name))[1] = auth.uid()::text);
+
+-- 4) 시놉시스 (CREATE > 시놉시스 작성) -------------------------------
+-- 작성자 본인만 보고 수정할 수 있는 비공개 기획 문서입니다.
+create table if not exists public.synopses (
+  id             uuid primary key default gen_random_uuid(),
+  owner_id       uuid not null references public.profiles (id) on delete cascade,
+  title          text not null default '' check (char_length(title) <= 60),
+  logline        text not null default '' check (char_length(logline) <= 120),
+  genre          text,
+  target_length  text,
+  content        text not null default '' check (char_length(content) <= 5000),
+  scenes         jsonb not null default '[]'::jsonb,
+  status         text not null default 'planning' check (status in ('planning', 'producing', 'published')),
+  created_at     timestamptz not null default now(),
+  updated_at     timestamptz not null default now()
+);
+create index if not exists synopses_owner_idx on public.synopses (owner_id, updated_at desc);
+alter table public.synopses enable row level security;
+
+drop policy if exists "synopses_select" on public.synopses;
+create policy "synopses_select" on public.synopses for select to authenticated using (owner_id = auth.uid());
+drop policy if exists "synopses_insert" on public.synopses;
+create policy "synopses_insert" on public.synopses for insert to authenticated with check (owner_id = auth.uid());
+drop policy if exists "synopses_update" on public.synopses;
+create policy "synopses_update" on public.synopses for update to authenticated using (owner_id = auth.uid()) with check (owner_id = auth.uid());
+drop policy if exists "synopses_delete" on public.synopses;
+create policy "synopses_delete" on public.synopses for delete to authenticated using (owner_id = auth.uid());
+
+create or replace function public.touch_updated_at()
+returns trigger language plpgsql set search_path = '' as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$;
+drop trigger if exists synopses_touch on public.synopses;
+create trigger synopses_touch before update on public.synopses
+  for each row execute function public.touch_updated_at();

@@ -1,9 +1,11 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { FilePenLine, CloudUpload, Bot, Clapperboard, Users, Lightbulb, ArrowRight, ChevronRight, Play, Heart, MoreVertical } from 'lucide-react'
+import { FilePenLine, CloudUpload, Bot, Clapperboard, Users, Lightbulb, ArrowRight, ChevronRight, Play, Heart, MoreVertical, Plus } from 'lucide-react'
 import Chips from '../components/Chips.jsx'
 import Script from '../components/Script.jsx'
 import { myProjects, projectStatus, img } from '../data/mock.js'
+import { useAuth } from '../lib/auth.jsx'
+import { fetchMySynopses, statusOf, formatDate } from '../lib/synopses.js'
 
 const TOOLS = [
   { Icon: Bot, title: 'AI 시놉시스 도우미', desc: '아이디어를\n구체화해보세요', tone: 'violet' },
@@ -15,7 +17,6 @@ const FILTERS = ['전체', '기획중', '제작중', '공개됨']
 
 export default function Create() {
   const [filter, setFilter] = useState('전체')
-  const list = filter === '전체' ? myProjects : myProjects.filter((p) => projectStatus[p.status].label === filter)
 
   return (
     <div className="page">
@@ -26,12 +27,12 @@ export default function Create() {
       </section>
 
       <div className="create-main">
-        <button className="create-big create-big--pink">
+        <Link to="/synopsis/new" className="create-big create-big--pink">
           <FilePenLine size={48} />
           <strong>시놉시스 작성</strong>
           <span>아이디어를 글로 시작하세요</span>
           <i className="arrow-ring"><ArrowRight size={22} /></i>
-        </button>
+        </Link>
         <Link to="/upload" className="create-big create-big--violet">
           <CloudUpload size={48} />
           <strong>영상 업로드</strong>
@@ -58,9 +59,36 @@ export default function Create() {
       <section className="section">
         <div className="section__head">
           <h2>내 프로젝트</h2>
-          <Link to="/library">전체 보기 <ChevronRight size={16} /></Link>
+          <Link to="/synopsis/new">새 시놉시스 <Plus size={16} /></Link>
         </div>
         <Chips options={FILTERS} value={filter} onChange={setFilter} showFilter={false} size="sm" />
+        <MyProjects filter={filter} />
+      </section>
+    </div>
+  )
+}
+
+// 로그인 + 서버 연결 시 실제 시놉시스, 아니면 예시 목록
+function MyProjects({ filter }) {
+  const { ready, user, loading: authLoading } = useAuth()
+  const [rows, setRows] = useState(null)
+  const [error, setError] = useState('')
+  const live = ready && user
+
+  useEffect(() => {
+    if (!live) return
+    fetchMySynopses().then(setRows).catch((e) => setError(e.message))
+  }, [live])
+
+  if (ready && authLoading) return null
+
+  if (!live) {
+    const list = filter === '전체' ? myProjects : myProjects.filter((p) => projectStatus[p.status].label === filter)
+    return (
+      <>
+        <p className="form__hint project-hint">
+          {ready ? <><Link to="/login?next=/create">로그인</Link>하면 내 시놉시스가 여기에 저장됩니다. 아래는 예시입니다.</> : '아래는 예시 프로젝트입니다.'}
+        </p>
         <ul className="project-list">
           {list.map((p) => {
             const st = projectStatus[p.status]
@@ -80,9 +108,41 @@ export default function Create() {
               </li>
             )
           })}
-          {list.length === 0 && <li className="empty">이 상태의 프로젝트가 없습니다. 시놉시스 작성으로 새 프로젝트를 시작하세요.</li>}
         </ul>
-      </section>
-    </div>
+      </>
+    )
+  }
+
+  if (error) return <p className="form__error project-hint">시놉시스를 불러오지 못했습니다: {error}</p>
+  if (!rows) return <p className="form__hint project-hint">불러오는 중…</p>
+
+  const list = filter === '전체' ? rows : rows.filter((r) => statusOf(r.status).label === filter)
+  if (rows.length === 0) {
+    return (
+      <div className="empty-box project-hint">
+        <p>아직 작성한 시놉시스가 없습니다.</p>
+        <Link to="/synopsis/new" className="btn-primary">첫 시놉시스 쓰기</Link>
+      </div>
+    )
+  }
+
+  return (
+    <ul className="project-list">
+      {list.length === 0 && <li className="empty">이 상태의 프로젝트가 없습니다.</li>}
+      {list.map((r) => {
+        const st = statusOf(r.status)
+        return (
+          <li key={r.id}>
+            <Link to={`/synopsis/${r.id}`} className="project">
+              <span className="project__tile">{r.genre || '시놉시스'}</span>
+              <strong>{r.title || '제목 없음'}</strong>
+              <span className={`status status--${st.tone}`}>{st.label}</span>
+              <span className="project__date">{formatDate(r.updated_at)} 수정{r.target_length ? ` · ${r.target_length}` : ''}</span>
+              <ChevronRight size={18} className="more" />
+            </Link>
+          </li>
+        )
+      })}
+    </ul>
   )
 }

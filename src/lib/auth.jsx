@@ -6,6 +6,7 @@ const AuthContext = createContext(null)
 
 const KO_ERRORS = {
   'Invalid login credentials': '이메일 또는 비밀번호가 올바르지 않습니다.',
+  'email rate limit exceeded': '메일 발송 한도를 초과했습니다. 잠시 후 다시 시도해 주세요.',
   'User already registered': '이미 가입된 이메일입니다.',
   'Email not confirmed': '이메일 인증을 먼저 완료해 주세요. 받은편지함(스팸함 포함)을 확인하세요.',
   'Password should be at least 6 characters.': '비밀번호는 6자 이상이어야 합니다.',

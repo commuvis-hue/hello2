@@ -460,6 +460,51 @@ h1, h2, h3, p { margin: 0; }
 .my-videos__body .muted { font-size: 12.5px; }
 .my-videos .icon-btn { color: var(--muted); padding: 8px; }
 
+/* ===== Synopsis ===== */
+.btn-sm { padding: 9px 18px; font-size: 14px; box-shadow: none; }
+.btn-dashed { justify-content: center; border-style: dashed; color: var(--muted); }
+.btn-danger { color: #ff8a95; }
+.synopsis { gap: 22px; }
+.synopsis__bar { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 112px); z-index: 5; display: flex; align-items: center; gap: 12px; padding: 10px 0; background: var(--bg); }
+.synopsis__back { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-display); letter-spacing: .12em; font-size: 14px; color: var(--muted); }
+.save-state { margin-left: auto; font-size: 13px; color: var(--muted); }
+.save-state--saved { color: var(--green); }
+.save-state--error { color: #ff8a95; }
+.synopsis__title { width: 100%; padding: 4px 0 10px; border: 0; border-bottom: 1px solid var(--line); background: none; color: var(--text); font: inherit; font-size: 28px; font-weight: 800; outline: none; }
+.synopsis__title:focus { border-bottom-color: var(--violet); }
+.synopsis__title::placeholder { color: #55556f; }
+.synopsis__content { min-height: 220px; line-height: 1.7; }
+.counter { align-self: flex-end; font-size: 12px; color: var(--muted); }
+.field__head { display: flex; align-items: center; justify-content: space-between; }
+.field__head > span { font-size: 14px; font-weight: 600; color: #d8d8ee; }
+.field__head .text-btn { font-size: 13px; color: #c9a6ff; }
+.choice-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip--sm { min-width: 0; padding: 8px 14px; font-size: 14px; }
+.scenes { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.scene { padding: 12px; border-radius: 14px; background: var(--surface); border: 1px solid var(--line); display: flex; flex-direction: column; gap: 8px; }
+.scene__head { display: flex; align-items: center; gap: 10px; }
+.scene__no { flex: none; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: var(--grad); font-size: 13px; font-weight: 700; }
+.scene__label { flex: 1; min-width: 0; border: 0; background: none; color: var(--text); font: inherit; font-weight: 700; font-size: 15px; outline: none; }
+.scene .icon-btn { color: var(--muted); }
+.field .scene__label { padding: 4px 0; border: 0; border-radius: 0; background: none; box-shadow: none; font-size: 15px; }
+.field .scene__label:focus { border-bottom: 1px solid var(--violet); box-shadow: none; }
+.scene textarea { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg-2); color: var(--text); font: inherit; font-size: 15px; resize: vertical; outline: none; }
+.scene textarea:focus { border-color: var(--violet); }
+.status-pick { padding: 8px 16px; border-radius: 999px; border: 1px solid var(--line); font-size: 14px; color: var(--muted); }
+.status-pick.is-active.status-pick--violet { color: #c9a6ff; border-color: var(--violet); background: rgba(139,61,255,.14); }
+.status-pick.is-active.status-pick--amber { color: var(--amber); border-color: var(--amber); background: rgba(255,176,46,.1); }
+.status-pick.is-active.status-pick--green { color: var(--green); border-color: var(--green); background: rgba(34,201,138,.1); }
+.synopsis__actions { display: flex; justify-content: space-between; gap: 10px; padding-bottom: 8px; }
+.project-hint { margin: 0 14px; }
+.project-hint a { color: var(--pink); }
+.project-list > li > a.project { color: inherit; }
+.project__tile { width: 120px; height: 58px; border-radius: 6px; display: grid; place-items: center; padding: 0 6px; text-align: center; font-size: 13px; font-weight: 700; background: linear-gradient(135deg, rgba(255,46,147,.35), rgba(91,61,255,.35)); }
+@media (max-width: 480px) {
+  .project__tile { width: 84px; grid-row: span 2; }
+  .synopsis__title { font-size: 23px; }
+  .synopsis__bar { top: calc(env(safe-area-inset-top, 0px) + 104px); }
+}
+
 /* ===== Placeholder ===== */
 .placeholder { align-items: center; text-align: center; padding: 100px 24px; gap: 14px; }
 .placeholder h1 { font-size: 26px; }
