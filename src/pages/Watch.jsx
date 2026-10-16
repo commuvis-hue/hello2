@@ -5,7 +5,9 @@ import { Eye, Heart } from 'lucide-react'
 import Chips from '../components/Chips.jsx'
 import Badge from '../components/Badge.jsx'
 import Script from '../components/Script.jsx'
-import { img } from '../data/mock.js'
+import { img, bannerVideoIds, vid } from '../data/mock.js'
+import BannerVideo from '../components/BannerVideo.jsx'
+import { Play } from 'lucide-react'
 import { useWatchList } from '../lib/videos.js'
 
 const FILTERS = ['전체', '인기', '신규', '조회수']
@@ -14,6 +16,14 @@ const num = (s) => parseFloat(s) * (s.endsWith('M') ? 1e6 : s.endsWith('K') ? 1e
 export default function Watch() {
   const [filter, setFilter] = useState('전체')
   const { items: watchItems, error } = useWatchList()
+  const [nowPlaying, setNowPlaying] = useState(null)
+
+  const bannerItems = useMemo(() => {
+    const picked = bannerVideoIds
+      .map((id) => (id === 'banner' ? { id: null, video: vid('banner') } : watchItems.find((v) => v.id === id)))
+      .filter((v) => v?.video)
+    return picked.length ? picked : watchItems.filter((v) => v.video).slice(0, 3)
+  }, [watchItems])
 
   const items = useMemo(() => {
     if (filter === '인기') return [...watchItems].sort((a, b) => num(b.likes) - num(a.likes))
@@ -24,9 +34,15 @@ export default function Watch() {
 
   return (
     <div className="page">
-      <section className="banner" style={{ backgroundImage: `url(${img('watch-banner', 900, 460)})` }}>
+      <section className="banner banner--video" style={{ backgroundImage: `url(${img('watch-banner', 900, 460)})` }}>
+        <BannerVideo items={bannerItems} onChange={setNowPlaying} />
         <p className="banner__stack">SHORT<br />IDEAS<br />BIG<br />TOMORROW</p>
         <Script className="banner__script" lines={['Stories', 'Change', 'People']} />
+        {nowPlaying?.id && nowPlaying.title && (
+          <Link to={`/play/watch/${nowPlaying.id}`} className="banner__now">
+            <Play size={12} fill="currentColor" />{nowPlaying.title}
+          </Link>
+        )}
       </section>
 
       <Chips options={FILTERS} value={filter} onChange={setFilter} />

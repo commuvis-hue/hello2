@@ -7,6 +7,10 @@ export const img = (seed, w = 400, h = 520) =>
 // 썸네일(poster)을 따로 만들었다면 같은 폴더에 a.jpg 등으로 넣고 poster: '/videos/a.jpg' 를 추가하세요.
 export const vid = (name) => `/videos/${name}.mp4`
 
+// WATCH 상단 배너에 번갈아 나올 영상 (watchItems의 id)
+// 배너 전용 영상을 쓰려면 public/videos/banner.mp4 를 넣고 아래를 ['banner'] 로 바꾸세요.
+export const bannerVideoIds = ['w1', 'w6', 'w7']
+
 export const currentUser = {
   name: 'J STORY',
   avatar: img('me', 120, 120),
