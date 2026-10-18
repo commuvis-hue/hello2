@@ -15,8 +15,10 @@ import SynopsisEditor from './pages/SynopsisEditor.jsx'
 import Purchase from './pages/Purchase.jsx'
 import CertificateVerify from './pages/CertificateVerify.jsx'
 import { RequireAuth } from './lib/auth.jsx'
+import { useLang } from './i18n/index.jsx'
 
 export default function App() {
+  useLang() // 언어가 바뀌면 전체 화면을 다시 그림
   return (
     <Routes>
       <Route path="/" element={<Landing />} />

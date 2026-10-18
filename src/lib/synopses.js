@@ -1,4 +1,5 @@
 import { supabase } from './supabase.js'
+import { t, locale } from '../i18n/index.jsx'
 
 export const GENRES = ['드라마', '코미디', '로맨스', '스릴러', '액션', '다큐', '브이로그', '애니메이션', '기타']
 export const LENGTHS = ['15초', '30초', '60초', '3분 이내']
@@ -33,7 +34,7 @@ export async function getSynopsis(id) {
 
 export async function createSynopsis(fields) {
   const { data: { session } } = await supabase.auth.getSession()
-  if (!session) throw new Error('로그인이 필요합니다.')
+  if (!session) throw new Error(t('로그인이 필요합니다.'))
   const { data, error } = await supabase
     .from('synopses')
     .insert({ ...fields, owner_id: session.user.id })
@@ -57,18 +58,18 @@ export async function deleteSynopsis(id) {
 // 공유·복사용 텍스트
 export function toPlainText(s) {
   const lines = [
-    s.title || '(제목 없음)',
-    s.logline && `한 줄 요약: ${s.logline}`,
-    [s.genre, s.target_length].filter(Boolean).join(' · '),
+    s.title || t('(제목 없음)'),
+    s.logline && `${t('한 줄 요약')}: ${s.logline}`,
+    [s.genre, s.target_length].filter(Boolean).map((x) => t(x)).join(' · '),
     '',
     s.content,
   ]
   if (s.scenes?.length) {
-    lines.push('', '[장면 구성]')
+    lines.push('', `[${t('장면 구성')}]`)
     s.scenes.forEach((sc, i) => lines.push(`${i + 1}. ${sc.label}: ${sc.text}`))
   }
   return lines.filter((l) => l !== false && l !== undefined && l !== null).join('\n').trim()
 }
 
 export const formatDate = (iso) =>
-  new Date(iso).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\s/g, '').replace(/\.$/, '')
+  new Date(iso).toLocaleDateString(locale(), { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\s/g, '').replace(/\.$/, '')

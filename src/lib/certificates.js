@@ -1,4 +1,5 @@
 import { supabase } from './supabase.js'
+import { t } from '../i18n/index.jsx'
 
 export const PAY_METHODS = [
   { id: 'card', label: '신용·체크카드', sub: '국내 모든 카드 · 할부 가능' },
@@ -34,7 +35,7 @@ const COLS = 'code, video_ref, video_title, seller_name, buyer_name, amount, pay
 
 export async function issueCertificate(fields) {
   const { data: { session } } = await supabase.auth.getSession()
-  if (!session) throw new Error('로그인이 필요합니다.')
+  if (!session) throw new Error(t('로그인이 필요합니다.'))
   for (let attempt = 0; attempt < 3; attempt++) {
     const { data, error } = await supabase
       .from('certificates')
@@ -44,7 +45,7 @@ export async function issueCertificate(fields) {
     if (!error) return data
     if (error.code !== '23505') throw error // 23505 = 코드 중복 → 새 코드로 재시도
   }
-  throw new Error('인증서 코드를 만들지 못했습니다. 다시 시도해 주세요.')
+  throw new Error(t('인증서 코드를 만들지 못했습니다. 다시 시도해 주세요.'))
 }
 
 export async function fetchMyCertificates() {

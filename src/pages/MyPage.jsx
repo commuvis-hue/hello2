@@ -5,6 +5,7 @@ import SetupNotice from '../components/SetupNotice.jsx'
 import { useAuth } from '../lib/auth.jsx'
 import { fetchMyVideos, deleteVideo } from '../lib/videos.js'
 import { fetchMyCertificates } from '../lib/certificates.js'
+import { t, locale } from '../i18n/index.jsx'
 
 const STATUS = {
   published: { label: '공개됨', tone: 'green' },
@@ -29,16 +30,16 @@ export default function MyPage() {
   }, [ready, user])
 
   const remove = async (v) => {
-    if (!window.confirm(`"${v.title}" 영상을 삭제할까요? 되돌릴 수 없습니다.`)) return
+    if (!window.confirm(t('"{title}" 영상을 삭제할까요? 되돌릴 수 없습니다.', { title: v.title }))) return
     try {
       await deleteVideo(v.raw)
       setVideos((list) => list.filter((x) => x.id !== v.id))
     } catch (e) {
-      alert('삭제하지 못했습니다: ' + e.message)
+      alert(t('삭제하지 못했습니다') + ': ' + e.message)
     }
   }
 
-  if (!ready) return <div className="page form-page"><h1 className="form-page__title">마이페이지</h1><SetupNotice /></div>
+  if (!ready) return <div className="page form-page"><h1 className="form-page__title">{t('마이페이지')}</h1><SetupNotice /></div>
 
   return (
     <div className="page form-page">
@@ -48,12 +49,12 @@ export default function MyPage() {
           <strong>{profile?.nickname ?? '…'}</strong>
           <span>{user.email}</span>
         </div>
-        <button className="btn-outline" onClick={signOut}><LogOut size={16} />로그아웃</button>
+        <button className="btn-outline" onClick={signOut}><LogOut size={16} />{t('로그아웃')}</button>
       </section>
 
       {certs.length > 0 && (
         <>
-          <div className="section__head section__head--flush"><h2>보유 저작권 인증서</h2></div>
+          <div className="section__head section__head--flush"><h2>{t('보유 저작권 인증서')}</h2></div>
           <ul className="cert-list">
             {certs.map((c) => (
               <li key={c.code}>
@@ -61,7 +62,7 @@ export default function MyPage() {
                   <ShieldCheck size={24} />
                   <span>
                     <strong>{c.video_title}</strong>
-                    <small>{c.code} · {new Date(c.issued_at).toLocaleDateString('ko-KR')}{c.is_test ? ' · 테스트' : ''}</small>
+                    <small>{c.code} · {new Date(c.issued_at).toLocaleDateString(locale())}{c.is_test ? ` · ${t('테스트')}` : ''}</small>
                   </span>
                   <ChevronRight size={18} />
                 </Link>
@@ -72,16 +73,16 @@ export default function MyPage() {
       )}
 
       <div className="section__head section__head--flush">
-        <h2>내가 올린 영상</h2>
-        <Link to="/upload" className="btn-outline"><Plus size={16} />영상 올리기</Link>
+        <h2>{t('내가 올린 영상')}</h2>
+        <Link to="/upload" className="btn-outline"><Plus size={16} />{t('영상 올리기')}</Link>
       </div>
 
-      {loading && <p className="muted">불러오는 중…</p>}
+      {loading && <p className="muted">{t('불러오는 중…')}</p>}
       {error && <p className="form__error">{error}</p>}
       {!loading && videos.length === 0 && (
         <div className="empty-box">
-          <p>아직 올린 영상이 없습니다.</p>
-          <Link to="/upload" className="btn-primary">첫 영상 올리기</Link>
+          <p>{t('아직 올린 영상이 없습니다.')}</p>
+          <Link to="/upload" className="btn-primary">{t('첫 영상 올리기')}</Link>
         </div>
       )}
 
@@ -96,10 +97,10 @@ export default function MyPage() {
               </Link>
               <div className="my-videos__body">
                 <strong>{v.title}</strong>
-                <span className={`status status--${st.tone}`}>{st.label}</span>
-                <span className="muted">{new Date(v.createdAt).toLocaleDateString('ko-KR')} · 조회 {v.views} · 좋아요 {v.likes}</span>
+                <span className={`status status--${st.tone}`}>{t(st.label)}</span>
+                <span className="muted">{new Date(v.createdAt).toLocaleDateString(locale())} · {t('조회')} {v.views} · {t('좋아요')} {v.likes}</span>
               </div>
-              <button className="icon-btn" onClick={() => remove(v)} aria-label={`${v.title} 삭제`}><Trash2 size={20} /></button>
+              <button className="icon-btn" onClick={() => remove(v)} aria-label={t('{title} 삭제', { title: v.title })}><Trash2 size={20} /></button>
             </li>
           )
         })}

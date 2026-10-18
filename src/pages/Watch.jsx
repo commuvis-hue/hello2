@@ -9,6 +9,7 @@ import { img, bannerVideoIds, vid } from '../data/mock.js'
 import BannerVideo from '../components/BannerVideo.jsx'
 import { Play } from 'lucide-react'
 import { useWatchList } from '../lib/videos.js'
+import { t } from '../i18n/index.jsx'
 
 const FILTERS = ['전체', '인기', '신규', '조회수']
 const num = (s) => parseFloat(s) * (s.endsWith('M') ? 1e6 : s.endsWith('K') ? 1e3 : 1)
@@ -47,11 +48,11 @@ export default function Watch() {
 
       <Chips options={FILTERS} value={filter} onChange={setFilter} />
 
-      {error && <p className="form__error" style={{ margin: '0 16px' }}>업로드된 영상을 불러오지 못했습니다: {error}</p>}
+      {error && <p className="form__error" style={{ margin: '0 16px' }}>{t('업로드된 영상을 불러오지 못했습니다')}: {error}</p>}
 
       <div className="wgrid">
         {items.map((v) => (
-          <Link key={v.id} to={`/play/watch/${v.id}`} className="wcard" aria-label={`${v.title} 재생`}>
+          <Link key={v.id} to={`/play/watch/${v.id}`} className="wcard" aria-label={t('{title} 재생', { title: v.title })}>
             {v.video
               ? <VideoThumb src={v.video} poster={v.poster} fallbackDuration={v.duration} />
               : <><img src={img(v.seed)} alt="" loading="lazy" /><span className="duration">{v.duration}</span></>}

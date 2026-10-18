@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { Play, Users, Crown, ArrowRight, ChevronRight, Heart } from 'lucide-react'
 import Script from '../components/Script.jsx'
 import { fundProjects, trendingSeeds, img } from '../data/mock.js'
+import { t } from '../i18n/index.jsx'
 
 const HERO = ['fund-hero', 'fund-hero-2', 'fund-hero-3']
 const pct = (p) => p.percent ?? Math.round((p.raised / p.goal) * 100)
@@ -16,13 +17,13 @@ export default function Fund() {
     <div className="page">
       <section className="fund-hero" style={{ backgroundImage: `url(${img(HERO[slide], 900, 560)})` }}>
         <p className="banner__stack">IDEAS<br />PEOPLE<br />A BRIGHTER<br />TOMORROW</p>
-        <Link to={`/fund/${vip.id}`} className="play-ring play-ring--lg" aria-label="대표 프로젝트 영상 보기">
+        <Link to={`/fund/${vip.id}`} className="play-ring play-ring--lg" aria-label={t('대표 프로젝트 영상 보기')}>
           <Play size={40} fill="currentColor" />
         </Link>
         <Script className="banner__script" lines={['Good', 'Stories', 'Change', 'The World']} />
         <div className="dots dots--bar">
           {HERO.map((_, i) => (
-            <button key={i} className={i === slide ? 'is-active' : ''} onClick={() => setSlide(i)} aria-label={`슬라이드 ${i + 1}`} />
+            <button key={i} className={i === slide ? 'is-active' : ''} onClick={() => setSlide(i)} aria-label={t('슬라이드 {n}', { n: i + 1 })} />
           ))}
         </div>
       </section>
@@ -52,7 +53,7 @@ export default function Fund() {
               <Users size={20} className="fcard__icon" />
               <button
                 className={'fcard__like' + (liked[p.id] ? ' is-on' : '')}
-                aria-label="관심 프로젝트"
+                aria-label={t('관심 프로젝트')}
                 onClick={(e) => { e.preventDefault(); setLiked((s) => ({ ...s, [p.id]: !s[p.id] })) }}
               >
                 <Heart size={20} fill={liked[p.id] ? 'currentColor' : 'none'} />

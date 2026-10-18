@@ -1,4 +1,5 @@
 import { SlidersHorizontal } from 'lucide-react'
+import { t } from '../i18n/index.jsx'
 
 export default function Chips({ options, value, onChange, showFilter = true, size = 'md' }) {
   return (
@@ -12,12 +13,12 @@ export default function Chips({ options, value, onChange, showFilter = true, siz
             className={'chip' + (value === o ? ' is-active' : '')}
             onClick={() => onChange(o)}
           >
-            {o}
+            {t(o)}
           </button>
         ))}
       </div>
       {showFilter && (
-        <button className="chips__filter" aria-label="상세 필터"><SlidersHorizontal size={20} /></button>
+        <button className="chips__filter" aria-label={t('상세 필터')}><SlidersHorizontal size={20} /></button>
       )}
     </div>
   )

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { supabase, supabaseReady, SUPABASE_URL, SUPABASE_KEY, BUCKET } from './supabase.js'
 import { watchItems } from '../data/mock.js'
+import { t } from '../i18n/index.jsx'
 
 // 거래 가능 여부: 판매가가 있고, 거래불가로 지정되지 않았고, 이미 팔리지 않은 영상
 export const canTrade = (it) => Boolean(it.price) && it.tradable !== false && !it.sold
@@ -76,19 +77,19 @@ function uploadWithProgress(path, blob, accessToken, onProgress) {
     xhr.upload.onprogress = (e) => { if (e.lengthComputable && onProgress) onProgress(e.loaded / e.total) }
     xhr.onload = () => {
       if (xhr.status >= 200 && xhr.status < 300) return resolve()
-      let msg = `업로드 실패 (${xhr.status})`
+      let msg = t('업로드 실패 ({status})', { status: xhr.status })
       try { const j = JSON.parse(xhr.responseText); msg = j.message || j.error || msg } catch { /* 무시 */ }
-      if (xhr.status === 413 || /maximum allowed size/i.test(msg)) msg = '파일이 너무 큽니다. 50MB 이하로 줄여서 올려주세요.'
+      if (xhr.status === 413 || /maximum allowed size/i.test(msg)) msg = t('파일이 너무 큽니다. 50MB 이하로 줄여서 올려주세요.')
       reject(new Error(msg))
     }
-    xhr.onerror = () => reject(new Error('네트워크 오류로 업로드에 실패했습니다.'))
+    xhr.onerror = () => reject(new Error(t('네트워크 오류로 업로드에 실패했습니다.')))
     xhr.send(blob)
   })
 }
 
 export async function createVideo({ file, poster, meta, onProgress }) {
   const { data: { session } } = await supabase.auth.getSession()
-  if (!session) throw new Error('로그인이 필요합니다.')
+  if (!session) throw new Error(t('로그인이 필요합니다.'))
   const userId = session.user.id
   const id = crypto.randomUUID()
   const ext = (file.name.split('.').pop() || 'mp4').toLowerCase().replace(/[^a-z0-9]/g, '') || 'mp4'
@@ -130,7 +131,7 @@ export function inspectVideo(file) {
     v.src = url
     const fail = () => {
       URL.revokeObjectURL(url)
-      reject(new Error('이 브라우저에서 재생할 수 없는 영상 형식입니다. 아이폰 영상(HEVC)이라면 H.264 MP4로 변환한 뒤 올려주세요.'))
+      reject(new Error(t('이 브라우저에서 재생할 수 없는 영상 형식입니다. 아이폰 영상(HEVC)이라면 H.264 MP4로 변환한 뒤 올려주세요.')))
     }
     v.onerror = fail
     v.onloadedmetadata = () => {

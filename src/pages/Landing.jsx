@@ -2,7 +2,9 @@ import { Link } from 'react-router-dom'
 import { Play, FileText, Users, Tag, ArrowRight } from 'lucide-react'
 import Logo, { LogoMark } from '../components/Logo.jsx'
 import Script from '../components/Script.jsx'
+import LangSwitcher from '../components/LangSwitcher.jsx'
 import { img } from '../data/mock.js'
+import { t } from '../i18n/index.jsx'
 
 const PILLARS = [
   { to: '/watch', en: 'WATCH', ko: '보고', Icon: Play, tone: 'pink' },
@@ -19,13 +21,14 @@ export default function Landing() {
       <div className="landing__bg" style={{ backgroundImage: `url(${img('hero-face', 1200, 1600)})` }} />
       <div className="landing__veil" />
 
+      <LangSwitcher className="lang--landing" />
       <div className="landing__corner landing__corner--tl">SHORT<br />IDEAS<br />BIG<br />TOMORROW</div>
       <div className="landing__corner landing__corner--tr">PEOPLE<br />CONTENT<br />INVESTMENT<br />A BRIGHTER<br />TOMORROW</div>
 
       <section className="landing__hero">
         <LogoMark size={150} />
         <Logo size="xl" to="/" />
-        <p className="landing__copy">좋은 이야기는<br />세상을 바꿀 수 있습니다.</p>
+        <p className="landing__copy">{t('좋은 이야기는')}<br />{t('세상을 바꿀 수 있습니다.')}</p>
       </section>
 
       <div className="landing__wall" aria-hidden="true">
@@ -37,13 +40,13 @@ export default function Landing() {
         <Script className="landing__script" lines={['Stories', 'Change', 'People']} />
       </div>
 
-      <nav className="pillars" aria-label="HELLOOOO에서 할 수 있는 일">
+      <nav className="pillars" aria-label={t('HELLOOOO에서 할 수 있는 일')}>
         {PILLARS.map(({ to, en, ko, Icon, tone }) => (
           <Link key={en} to={to} className={`pillar pillar--${tone}`}>
             <Icon size={40} fill={tone === 'blue' || tone === 'violet' ? 'currentColor' : 'none'} />
             <strong>{en}</strong>
             <i />
-            <span>{ko}</span>
+            <span>{t(ko)}</span>
           </Link>
         ))}
       </nav>

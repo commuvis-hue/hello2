@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
 import { supabase, supabaseReady } from './supabase.js'
+import { t } from '../i18n/index.jsx'
 
 const AuthContext = createContext(null)
 
@@ -11,7 +12,7 @@ const KO_ERRORS = {
   'Email not confirmed': '이메일 인증을 먼저 완료해 주세요. 받은편지함(스팸함 포함)을 확인하세요.',
   'Password should be at least 6 characters.': '비밀번호는 6자 이상이어야 합니다.',
 }
-export const koError = (e) => KO_ERRORS[e?.message] ?? e?.message ?? '알 수 없는 오류가 발생했습니다.'
+export const koError = (e) => (KO_ERRORS[e?.message] ? t(KO_ERRORS[e.message]) : e?.message ?? t('알 수 없는 오류가 발생했습니다.'))
 
 export function AuthProvider({ children }) {
   const [session, setSession] = useState(null)
@@ -69,7 +70,7 @@ export function RequireAuth({ children }) {
   const { ready, loading, user } = useAuth()
   const { pathname } = useLocation()
   if (!ready) return children // 설정 전에는 각 화면이 안내 문구를 보여줌
-  if (loading) return <div className="page placeholder"><p>불러오는 중…</p></div>
+  if (loading) return <div className="page placeholder"><p>{t('불러오는 중…')}</p></div>
   if (!user) return <Navigate to={`/login?next=${encodeURIComponent(pathname)}`} replace />
   return children
 }

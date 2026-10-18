@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom'
+import { t } from '../i18n/index.jsx'
 
 export default function Logo({ size = 'md', to = '/' }) {
   return (
-    <Link to={to} className={`logo logo--${size}`} aria-label="HELLOOOO 홈">
+    <Link to={to} className={`logo logo--${size}`} aria-label={t('HELLOOOO 홈')}>
       <span className="logo__word">
         HELL<span className="logo__o">OOOO</span>
       </span>

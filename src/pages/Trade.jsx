@@ -4,6 +4,7 @@ import VideoThumb from '../components/VideoThumb.jsx'
 import { Heart, Play, ShoppingCart, CheckCircle2, MoreVertical } from 'lucide-react'
 import Chips from '../components/Chips.jsx'
 import { tradeItems, img, formatKRW } from '../data/mock.js'
+import { t } from '../i18n/index.jsx'
 
 const FILTERS = ['전체', '거래가능', '거래완료', '인기', '최신']
 const SLIDES = ['sunset-girl', 'dog', 'skate', 'another-me', 'anime', 'city-car']
@@ -39,13 +40,13 @@ export default function Trade() {
                   opacity: Math.abs(off) > 3 ? 0 : 1,
                 }}
                 onClick={() => setActive(i)}
-                aria-label={`${i + 1}번째 작품 보기`}
+                aria-label={t('{n}번째 작품 보기', { n: i + 1 })}
               >
                 <img src={img(s, 360, 540)} alt="" />
                 {off === 0 && (
                   <span className="coverflow__caption">
                     <span className="play-ring"><Play size={24} fill="currentColor" /></span>
-                    <em>순간이<br />작품이 되는 곳</em>
+                    <em>{t('순간이')}<br />{t('작품이 되는 곳')}</em>
                     <small>HELLOOOO<br />TRADE ORIGINALS</small>
                   </span>
                 )}
@@ -55,11 +56,11 @@ export default function Trade() {
         </div>
         <div className="coverflow__side">
           <p>SHORTS<br />CREATE<br />TRADE<br />A BIGGER<br />TOMORROW</p>
-          <span>좋은 콘텐츠가<br />더 멀리, 더 크게</span>
+          <span>{t('좋은 콘텐츠가')}<br />{t('더 멀리, 더 크게')}</span>
         </div>
         <div className="dots">
           {SLIDES.map((_, i) => (
-            <button key={i} className={i === active ? 'is-active' : ''} onClick={() => setActive(i)} aria-label={`슬라이드 ${i + 1}`} />
+            <button key={i} className={i === active ? 'is-active' : ''} onClick={() => setActive(i)} aria-label={t('슬라이드 {n}', { n: i + 1 })} />
           ))}
         </div>
       </section>
@@ -67,26 +68,26 @@ export default function Trade() {
       <Chips options={FILTERS} value={filter} onChange={setFilter} size="sm" />
 
       <div className="grid3">
-        {items.map((t) => (
-          <article key={t.id} className="vcard vcard--trade">
-            <Link to={`/play/trade/${t.id}`} className="vcard__thumb vcard__thumb--short" aria-label={`${t.title} 재생`}>
-              {t.video
-                ? <VideoThumb src={t.video} poster={t.poster} fallbackDuration={t.duration} />
-                : <><img src={img(t.seed)} alt="" loading="lazy" /><span className="duration">{t.duration}</span></>}
-              {t.badge && <span className={`badge badge--${t.badge}`}>{t.badge === 'new' ? 'New' : 'Hot'}</span>}
-              {!t.sold && <span className="thumb-play"><Play size={20} fill="currentColor" /></span>}
-              <span className="vcard__like"><Heart size={14} fill="currentColor" />{t.likes}</span>
+        {items.map((it) => (
+          <article key={it.id} className="vcard vcard--trade">
+            <Link to={`/play/trade/${it.id}`} className="vcard__thumb vcard__thumb--short" aria-label={t('{title} 재생', { title: it.title })}>
+              {it.video
+                ? <VideoThumb src={it.video} poster={it.poster} fallbackDuration={it.duration} />
+                : <><img src={img(it.seed)} alt="" loading="lazy" /><span className="duration">{it.duration}</span></>}
+              {it.badge && <span className={`badge badge--${it.badge}`}>{it.badge === 'new' ? 'New' : 'Hot'}</span>}
+              {!it.sold && <span className="thumb-play"><Play size={20} fill="currentColor" /></span>}
+              <span className="vcard__like"><Heart size={14} fill="currentColor" />{it.likes}</span>
             </Link>
             <div className="vcard__body">
-              <h3>{t.title}</h3>
-              <p className="tags">{t.tags.map((x) => '#' + x).join(' ')}</p>
-              <p className="owner"><img src={img('u-' + t.owner, 40, 40)} alt="" />{t.owner}</p>
-              {!t.sold && <p className="price">{formatKRW(t.price)}</p>}
+              <h3>{it.title}</h3>
+              <p className="tags">{it.tags.map((x) => '#' + x).join(' ')}</p>
+              <p className="owner"><img src={img('u-' + it.owner, 40, 40)} alt="" />{it.owner}</p>
+              {!it.sold && <p className="price">{formatKRW(it.price)}</p>}
               <div className="vcard__foot">
-                {t.sold
-                  ? <span className="pill pill--off"><CheckCircle2 size={15} />거래완료</span>
-                  : <Link to={`/purchase/trade/${t.id}`} className="pill pill--buy"><ShoppingCart size={15} />거래가능</Link>}
-                <button className="more" aria-label="더보기"><MoreVertical size={18} /></button>
+                {it.sold
+                  ? <span className="pill pill--off"><CheckCircle2 size={15} />{t('거래완료')}</span>
+                  : <Link to={`/purchase/trade/${it.id}`} className="pill pill--buy"><ShoppingCart size={15} />{t('거래가능')}</Link>}
+                <button className="more" aria-label={t('더보기')}><MoreVertical size={18} /></button>
               </div>
             </div>
           </article>
